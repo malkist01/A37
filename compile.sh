@@ -52,17 +52,16 @@ if [[ ! -d "$MY_DIR" ]]; then MY_DIR="$PWD"; fi
 #
 # TOOLCHAIN = the toolchain u want to use "gcc/clang"
 
-CHATID="-1001283860476"
-API_BOT="2049436092:AAFV-TxprsH_aC3_XBl-6uhgc9MToKhqUCQ"
-
+CHATID="-1002287610863"
+API_BOT="7596553794:AAGoeg4VypmUfBqfUML5VWt5mjivN5-3ah8"
 
 DEVICE="Oppo a37"
 CODENAME="A37"
 KERNEL_NAME="TeletubiesKernel"
 
-DEFCONFIG="mido_defconfig"
+DEFCONFIG="teletubies_defconfig"
 
-AnyKernel="https://github.com/Hunter-commits/anykernel.git"
+AnyKernel="https://github.com/malkist01/anykernel3.git"
 AnyKernelbranch="master"
 
 HOSST="android"
@@ -112,8 +111,8 @@ if [ "$TOOLCHAIN" == gcc ]; then
 		git clone --depth=1 https://github.com/malkist01/arm-eabi-4.9.git -b master "$HOME"/gcc32
 	fi
 	export PATH="$HOME/gcc64/bin:$HOME/gcc32/bin:$PATH"
-	export STRIP="$HOME/gcc64/aarch64-elf/bin/strip"
-	export KBUILD_COMPILER_STRING=$("$HOME"/gcc64/bin/aarch64-elf-gcc --version | head -n 1)
+	export STRIP="$HOME/gcc64/aarch64-linux-gnu/bin/strip"
+	export KBUILD_COMPILER_STRING=$("$HOME"/gcc64/bin/aarch64-linux-gnu --version | head -n 1)
 elif [ "$TOOLCHAIN" == clang ]; then
 	if [ ! -d "$HOME/proton_clang" ]
 	then
@@ -143,7 +142,7 @@ elif [ "$TOOLCHAIN" == gcc  ]; then
 	echo gcc
 	make -j$(nproc --all) O=out \
 			      ARCH=arm64 \
-			      CROSS_COMPILE=aarch64-elf- \
+			      CROSS_COMPILE=aarch64-linux-gnu- \
 			      CROSS_COMPILE_ARM32=arm-eabi- 2>&1 | tee error.log
 fi
 
@@ -151,7 +150,7 @@ End=$(date +"%s")
 Diff=$(($End - $Start))
 }
 
-export IMG="$MY_DIR"/out/arch/arm64/boot/Image.gz-dtb
+export IMG="$MY_DIR"/out/arch/arm64/boot/zImage-dtb
 
 # Let's start
 
@@ -169,7 +168,7 @@ make O=out clean && make O=out mrproper
 make "$DEFCONFIG" O=out
 
 echo -e "$yellow << compiling the kernel >> \n $white"
-tg_post_msg "<code>Building Image.gz-dtb</code>" "$CHATID"
+tg_post_msg "<code>Building zImage-dtb</code>" "$CHATID"
 
 build_kernel || error=true
 
@@ -193,7 +192,7 @@ KERVER=$(make kernelversion)
                 echo -e "$yellow << making kernel zip >> \n $white"
                 cp -r "$IMG" zip/
                 cd zip
-                mv Image.gz-dtb zImage
+                mv zImage-dtb
                 export ZIP="$KERNEL_NAME"-"$CODENAME"-"$DATE"
                 zip -r "$ZIP" *
                 curl -sLo zipsigner-3.0.jar https://raw.githubusercontent.com/Hunter-commits/AnyKernel/master/zipsigner-3.0.jar
