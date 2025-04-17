@@ -108,8 +108,8 @@ if [ "$TOOLCHAIN" == gcc ]; then
 	if [ ! -d "$HOME/gcc64" ] && [ ! -d "$HOME/gcc32" ]
 	then
 		echo -e "$green << cloning gcc from arter >> \n $white"
-		git clone --depth=1 https://github.com/mvaisakh/gcc-arm64 "$HOME"/gcc64
-		git clone --depth=1 https://github.com/mvaisakh/gcc-arm "$HOME"/gcc32
+		git clone --depth=1 https://github.com/malkist01/malkist-toolchain -b master "$HOME"/gcc64
+		git clone --depth=1 https://github.com/malkist01/arm-eabi-4.9.git -b master "$HOME"/gcc32
 	fi
 	export PATH="$HOME/gcc64/bin:$HOME/gcc32/bin:$PATH"
 	export STRIP="$HOME/gcc64/aarch64-elf/bin/strip"
