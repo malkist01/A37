@@ -103,27 +103,20 @@ tg_error() {
 # And after that , the script start the compilation of the kernel it self
 # For regen the defconfig . use the regen.sh script
 
-if [ "$TOOLCHAIN" == gcc ]; then
-	if [ ! -d "$HOME/gcc64" ]
-	then
 		echo -e "$green << cloning gcc from arter >> \n $white"
 		git clone --depth=1 https://github.com/malkist01/malkist-toolchain -b master "$HOME"/gcc64
-fi
 
 # Setup build process
 
 build_kernel() {
 Start=$(date +"%s")
 
-if [ "$TOOLCHAIN" == gcc  ]; then
-	echo gcc
 	make -j$(nproc --all) O=out \
 			      ARCH=arm64 \
 			      CROSS_COMPILE=aarch64-linux-gnu- \
 			      CROSS_COMPILE_ARM32=arm-eabi- \
 CONFIG_DEBUG_SECTION_MISMATCH=y \
 	                      CONFIG_NO_ERROR_ON_MISMATCH=y   2>&1 | tee error.log
-fi
 
 End=$(date +"%s")
 Diff=$(($End - $Start))
