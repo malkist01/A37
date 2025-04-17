@@ -55,11 +55,12 @@ if [[ ! -d "$MY_DIR" ]]; then MY_DIR="$PWD"; fi
 CHATID="-1002287610863"
 API_BOT="7596553794:AAGoeg4VypmUfBqfUML5VWt5mjivN5-3ah8"
 
-DEVICE="Oppo a37"
+
+DEVICE="OPPO"
 CODENAME="A37"
 KERNEL_NAME="TeletubiesKernel"
 
-DEF="teletubies_defconfig"
+DEFCONFIG="teletubies_defconfig"
 
 AnyKernel="https://github.com/malkist01/anykernel3.git"
 AnyKernelbranch="master"
@@ -103,20 +104,58 @@ tg_error() {
 # And after that , the script start the compilation of the kernel it self
 # For regen the defconfig . use the regen.sh script
 
+if [ "$TOOLCHAIN" == gcc ]; then
+	if [ ! -d "$HOME/gcc64" ] && [ ! -d "$HOME/gcc32" ]
+	then
 		echo -e "$green << cloning gcc from arter >> \n $white"
 		git clone --depth=1 https://github.com/malkist01/malkist-toolchain -b master "$HOME"/gcc64
+		git clone --depth=1 https://github.com/malkist01/arm-eabi-4.9.git -b master "$HOME"/gcc32
+	fi
+	export PATH="$HOME/gcc64/bin:$HOME/gcc32/bin:$PATH"
+	export STRIP="$HOME/gcc64/aarch64-linux-gnu/bin/strip"
+	export KBUILD_COMPILER_STRING=$("$HOME"/gcc64/bin/aarch64-linux-gnu --version | head -n 1)
+elif [ "$TOOLCHAIN" == clang ]; then
+	if [ ! -d "$HOME/proton_clang" ]
+	then
+		echo -e "$green << cloning proton clang >> \n $white"
+		git clone --depth=1 https://github.com/kdrag0n/proton-clang.git "$HOME"/proton_clang
+	fi
+	export PATH="$HOME/proton_clang/bin:$PATH"
+	export STRIP="$HOME/proton_clang/aarch64-linux-gnu/bin/strip"
+	export KBUILD_COMPILER_STRING=$("$HOME"/proton_clang/bin/clang --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g' -e 's/[[:space:]]*$//')
+fi
 
 # Setup build process
 
 build_kernel() {
 Start=$(date +"%s")
 
-	make -j$(nproc --all) O=out ${DEF}
+if [ "$TOOLCHAIN" == clang  ]; then
+	echo clang
+	make -j$(nproc --all) O=out \
+                              ARCH=arm64 \
+	                      CC="ccache clang" \
+	                      AR=llvm-ar \
+	                      NM=llvm-nm \
+	                      STRIP=llvm-strip \
+	                      OBJCOPY=llvm-objcopy \
+	                      OBJDUMP=llvm-objdump \
+	                      OBJSIZE=llvm-size \
+	                      READELF=llvm-readelf \
+	                      HOSTCC=clang \
+	                      HOSTCXX=clang++ \
+	                      HOSTAR=llvm-ar \
+	                      CROSS_COMPILE=aarch64-linux-gnu- \
+	                      CROSS_COMPILE_ARM32=arm-linux-gnueabi- \
+	                      CONFIG_DEBUG_SECTION_MISMATCH=y \
+	                      CONFIG_NO_ERROR_ON_MISMATCH=y   2>&1 | tee error.log
+elif [ "$TOOLCHAIN" == gcc  ]; then
+	echo gcc
+	make -j$(nproc --all) O=out \
 			      ARCH=arm64 \
 			      CROSS_COMPILE=aarch64-linux-gnu- \
-			      CROSS_COMPILE_ARM32=arm-eabi- \
-CONFIG_DEBUG_SECTION_MISMATCH=y \
-	                      CONFIG_NO_ERROR_ON_MISMATCH=y   2>&1 | tee error.log
+			      CROSS_COMPILE_ARM32=arm-eabi- 2>&1 | tee error.log
+fi
 
 End=$(date +"%s")
 Diff=$(($End - $Start))
