@@ -59,7 +59,7 @@ DEVICE="Oppo a37"
 CODENAME="A37"
 KERNEL_NAME="TeletubiesKernel"
 
-DEFCONFIG="teletubies_defconfig"
+DEF="teletubies_defconfig"
 
 AnyKernel="https://github.com/malkist01/anykernel3.git"
 AnyKernelbranch="master"
@@ -111,7 +111,7 @@ tg_error() {
 build_kernel() {
 Start=$(date +"%s")
 
-	make -j$(nproc --all) O=out \
+	make -j$(nproc --all) O=out ${DEF}
 			      ARCH=arm64 \
 			      CROSS_COMPILE=aarch64-linux-gnu- \
 			      CROSS_COMPILE_ARM32=arm-eabi- \
