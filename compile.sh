@@ -56,19 +56,19 @@ CHATID="-1001283860476"
 API_BOT="2049436092:AAFV-TxprsH_aC3_XBl-6uhgc9MToKhqUCQ"
 
 
-DEVICE="Redmi Note 4/4X"
-CODENAME="mido"
-KERNEL_NAME="FussionKernel"
+DEVICE="Oppo a37"
+CODENAME="A37"
+KERNEL_NAME="TeletubiesKernel"
 
 DEFCONFIG="mido_defconfig"
 
 AnyKernel="https://github.com/Hunter-commits/anykernel.git"
 AnyKernelbranch="master"
 
-HOSST="Alone's Buildbot"
-USEER="Alone0316"
+HOSST="android"
+USEER="malkist"
 
-TOOLCHAIN="clang"
+TOOLCHAIN="gcc"
 
 # setup telegram env
 export BOT_MSG_URL="https://api.telegram.org/bot$API_BOT/sendMessage"
