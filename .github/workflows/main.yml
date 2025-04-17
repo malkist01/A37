@@ -1,4 +1,4 @@
-name: mido-main
+name: main
 on:
    workflow_dispatch:
 
@@ -23,5 +23,6 @@ jobs:
              chmod +x compile.sh && bash compile.sh
              shell: bash
              env:
+              TZ: Asia/Jakarta
               CHATID: ${{ secrets.CHAT_ID }}
               API_BOT: ${{ secrets.BOT_API }}
